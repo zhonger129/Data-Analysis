@@ -12,10 +12,10 @@
 
 **进阶部分**
 * 数据提取基础
-  ** CSV
-  ** xlrd
-  ** XML 
-  ** MongoDB
+  * CSV
+  * xlrd
+  * XML 
+  * MongoDB
 * EDA (R)
 * 机器学习
 * 数据可视化  
