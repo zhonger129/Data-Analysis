@@ -16,7 +16,7 @@
   * xlrd
   * XML 
   * MongoDB
-* EDA (R)
+* 探索数据分析 EDA (R)
 * 机器学习
   * 朴素贝叶斯 (Naive Bayes)
   * 支持向量机 (SVM)
