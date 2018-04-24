@@ -18,6 +18,18 @@
   * MongoDB
 * EDA (R)
 * 机器学习
+  * 朴素贝叶斯 (Naive Bayes)
+  * 支持向量机 (SVM)
+  * 决策树 (Decision Trees)
+  * 回归 (Regressions)
+  * 异常值 (Outliers)
+  * 聚类 (Clustering)
+  * 特征缩放 (Feature scaling)
+  * 文本学习 (Text Learning)
+  * 特征选择 (Feature Section)
+  * 主城分析（PCA）
+  * 交叉验证 (Validation)
+  * 评估矩阵 (Evaluation Metrics)
 * 数据可视化  
   * Dimple.js  
   * D3.js
