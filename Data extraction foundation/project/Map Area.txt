@@ -1,0 +1,8 @@
+Map Area
+
+Shenzhen City, Guangdong, China
+
+    http://www.openstreetmap.org/relation/3464353
+    https://mapzen.com/data/metro-extracts/metro/shenzhen_china/
+
+Shenzhen City is my working city currently, I have been working here for more than 6 years, I am interested to explore more about the city. I have many years experience on SQL and Relational database, here, I shall try to use MongoDB to complete the exercise.
