@@ -92,7 +92,7 @@ Should be turned into
 
 
 ```python
-"node_refs": ["305896090", "1719825889"]
+"node_refs": ["305896090", "1719825889"] 
 ```
 
 For "relation" specifically:
@@ -103,7 +103,7 @@ For "relation" specifically:
 <member type="relation" ref="913110" role="subarea"/>
 ```
 
-Should be turn into 
+Should be turned into 
 
 
 ```python
@@ -179,7 +179,7 @@ shenzhen_china.osm.json.........245M
 { "_id" : { "user_name" : "happy-camper" }, "count" : 18585 }  
 { "_id" : { "user_name" : "ch40s" }, "count" : 13962 }  
 
-## Additional Ideas
+## Additional Exploration
 
 I want to study how users input the words while they editing in OpenStreetMap.org, for example, the supermarket name "Walmat", using the below inquiring, has different formats, the user MarsmanRom edited for two places and has the same format with the name.
 
@@ -215,6 +215,12 @@ I want to study how users input the words while they editing in OpenStreetMap.or
 { "_id" : { "name" : "Vanguard Supermarket" }, "count" : 2 }  
 { "_id" : { "name" : "沃尔玛" }, "count" : 2 }  
 { "_id" : { "name" : "华润万家" }, "count" : 2 }  
+
+## Additional Ideas
+
+The downloaded metro extrac from [mapzen](https://mapzen.com/data/metro-extracts/metro/shenzhen_china/) is not readly the Shenzhen City only which I would explore and precess, that actually includes parts of the neighboring city (e.g Hong Kong). Therefore, as a future improvement, the first ,I will filter out the non-Shenzhen nodes and their references. This must improve the data accuracy and impact the results of data anlysis.
+
+The second, as the OpenStreetMap is editing by many users, or other reasons, some tags were given very detailed information ("k","v"), however, we still can find some tags with little "k" & "v" olny, even missed the most important information. We may resolve this issue by cross-referencing/cross-validating missing data from other database like Google API according to coordinate (lattitude & longtitude), this must improve the data validity and completeness for us.
 
 ## Conclusion
 
