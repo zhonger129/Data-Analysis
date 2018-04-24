@@ -18,6 +18,6 @@
   ** MongoDB
 * EDA (R)
 * 机器学习
-* 数据可视化
-  ** Dimple.js
-  ** D3.js
+* 数据可视化  
+  * Dimple.js  
+  * D3.js
