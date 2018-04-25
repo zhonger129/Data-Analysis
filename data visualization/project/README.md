@@ -1,6 +1,6 @@
 ## Summary
 
-The purpose of this analysis bases on the dataset of Titanic passengers. We will make a data visualization to help us find the survival rate for the passengers. For example, it's to show the survival rate of passengers over the Age stage, whether male or female would have more survived people in the sinking of the Titanic.
+The purpose of this analysis bases on the dataset of Titanic passengers. We will make a data visualization to help us find the survival rate for the passengers. For example, it's to show the survival rate of passengers over the Age, whether male or female would have more survived people in the sinking of the Titanic.
 
 
 ## Design
