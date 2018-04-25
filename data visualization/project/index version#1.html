@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://d3js.org/d3.v4.js" charset="utf-8"></script>
+<!--script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script-->
+<!--link rel="stylesheet" type="text/css" href="css/myStyles.css"-->
+</head>
+<style>
+
+.bar {
+  fill: steelblue;
+}
+
+.bar:hover {
+  fill: brown;
+}
+
+.axis--x path {
+  display: none;
+}
+
+</style>
+<body>
+  <div id="textContainer"></div>
+  <div id="chartContainer"></div>
+  
+  <script type="text/javascript">
+
+  /*
+   the desctiption of text before the chart 
+  */
+  var link = "titanic data"
+    d3.select("#textContainer")
+          .append("h2")
+          .text("Summary of the titanic data");
+    d3.select("#textContainer")
+          .append("p")
+          .text("This is the visualization that shows the demographics or passenger information between those passengers who survived and those who died. There were 891 passengers on board. 342 of them survived and 549 of them didnot survive. The description of the dataset can be found in this link:")
+          .append("a")
+          .attr("href","https://www.kaggle.com/c/titanic")
+          .text(link);
+
+// loading data
+d3.csv("titanic_cleaned.csv", function(d) {
+  d.PassengerId = +d.PassengerId,
+  d.Survived = +d.Survived,
+  d.Age = +d.Age;
+  return d;
+}, function(error, data) {
+  if (error) throw error;    
+    // create a svg
+    var svg = d3.select("#chartContainer")
+       .append("svg")
+       .attr("width",600)
+       .attr("height",400);
+
+    // draw part
+    var margin = {top: 20, right: 20, bottom: 30, left: 40},
+        width = +svg.attr("width") - margin.left - margin.right,
+        height = +svg.attr("height") - margin.top - margin.bottom;
+
+
+    var g = svg.append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")"); 
+
+    // Create scale
+    var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
+        y = d3.y = d3.scaleLinear().rangeRound([height, 0]);
+         
+    var nest = d3.nest()
+           .key(function(d){return d.Age_stage;})
+	   .key(function(d){return d.Survived;})
+	   .rollup(function(v) {return v.length; })
+	   .entries(data);
+
+console.log(nest)
+  // Scale the range of the data
+  x.domain(nest.map(function(d) { return d.key; }));
+  y.domain([0, d3.max(nest, function(d) { return d3.min(d.values,function(d){ return d.value ;}) / d3.max(d.values,function(d){ return d.value ;}); })]);
+  
+    //create X-axis
+    g.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x));
+    
+    //create Y-axis
+    g.append("g")
+      .attr("class", "axis axis--y")
+      .call(d3.axisLeft(y).ticks(10, "%"))
+      .call(d3.axisLeft(y));
+
+    //create bar chart (survied / not survied in % ) for overall people survied and not survied
+    g.selectAll(".bar")
+      .data(nest)
+      .enter()
+      .append("rect")
+         .attr("class","bar")
+	 .attr("x",function(d) { return x(d.key); })
+	 .attr("y",function(d) { return y(d3.min(d.values,function(d){ return d.value ;}) / d3.max(d.values,function(d){ return d.value ;})); })
+	 .attr("width", x.bandwidth())
+         .attr("height", function(d) { return height - y(d3.min(d.values,function(d){ return d.value ;}) / d3.max(d.values,function(d){ return d.value ;})); });
+
+    g.selectAll(".line")
+      .data(nest)
+      .enter()
+      .append("line")
+         .attr("class","line")
+	 .attr("x",function(d) { return x(d.key); })
+	 .attr("y",function(d) { return y(d3.min(d.values,function(d){ return d.value ;}) / d3.max(d.values,function(d){ return d.value ;})); })
+	 .attr("stroke","black");
+});
+  </script>
+</body>
+</html> 

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<script src="https://d3js.org/d3.v4.js" charset="utf-8"></script>
+
+</head>
+<style>
+
+.overAllBar {
+  fill: #5B5B5B;
+}
+
+.maleBar {
+  fill: steelblue;
+}
+
+.femaleBar {
+  fill: #FF60AF;
+}
+
+.overAllBar:hover {
+  fill: brown;
+}
+
+.maleBar:hover {
+  fill: brown;
+}
+
+.femaleBar:hover {
+  fill: brown;
+}
+
+.axis--x path {
+  display: none;
+}
+
+div.tooltip {
+  position: absolute;
+  text-align: center;
+  width: 100px;
+  height: 42px;
+  padding: 2px;
+  font: 12px sans-serif;
+  background: lightsteelblue;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+</style>
+<body>
+  <div id="textContainer"></div>
+  <div id="chartContainer"></div>
+  
+  <script type="text/javascript">
+
+  /*
+   the desctiption of text before the chart 
+  */
+  var link = "titanic data"
+    d3.select("#textContainer")
+          .append("h2")
+          .text("Survival rate of the titanic passengers");
+    d3.select("#textContainer")
+          .append("p")
+          .text("This is the visualization that shows the ovall passenger, man and female survival rate over age between those passengers who survived and those who died. There were 891 passengers on board. 342 of them survived and 549 of them didnot survive. The description of the dataset can be found in this link:")
+          .append("a")
+          .attr("href","https://www.kaggle.com/c/titanic")
+          .text(link);
+
+// loading data
+d3.csv("titanic_cleaned.csv", function(d) {
+  d.PassengerId = +d.PassengerId,
+  d.Survived = +d.Survived,
+  d.Age = +d.Age;
+  return d;
+}, function(error, data) {
+  if (error) throw error; 
+
+    var div = d3.select("#chartContainer").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+
+    // create a svg
+    var svg = d3.select("#chartContainer")
+       .append("svg")
+       .attr("width",900)
+       .attr("height",450);
+
+    // draw part
+    var margin = {top: 20, right: 20, bottom: 30, left: 40},
+        width = +svg.attr("width") - margin.left - margin.right,
+        height = +svg.attr("height") - margin.top - margin.bottom - 20;
+
+
+    var g = svg.append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")"); 
+
+    // Create scale
+    var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
+        y = d3.scaleLinear().rangeRound([height, 0]);
+         
+    // passengers group by Age and Sex
+    var nest_d = d3.nest()
+           .key(function(d){return d.Age_stage;}).sortKeys(d3.ascending)
+	   .key(function(d){return d.Survived;}).sortKeys(d3.ascending)
+	   .key(function(d){return d.Sex;}).sortKeys(d3.ascending)
+	   .rollup(function(v) {return v.length; })
+	   .entries(data);
+
+    // count for survied and non-survied passenger with male and female respectively 
+    function count(d){
+
+        var maleSurvied = 0,
+	    femaleSurvied = 0,
+	    maleNotSurvied = 0,
+	    femaleNotSurvied = 0;
+
+	var surviedRate = new Array;
+
+	if (d.values.length == 2) { // count for not survied passenger
+
+	   // for not survied passengers
+	   if (d.values[0].values.length == 2){
+	   	femaleNotSurvied += d.values[0].values[0].value;
+                maleNotSurvied += d.values[0].values[1].value;	      
+	   }else {
+	      if (d.values[0].values[0].key == "female"){
+	         femaleNotSurvied += d.values[0].values[0].value;
+	      } else {
+	         maleNotSurvied += d.values[0].values[0].value;
+	      }
+	   } 
+           
+	   // for survied passengers
+	   if (d.values[1].values.length == 2){
+	   	femaleSurvied += d.values[1].values[0].value;
+                maleSurvied += d.values[1].values[1].value;	      
+	   }else {
+	      if (d.values[1].values[0].key == "female"){
+	         femaleSurvied += d.values[1].values[0].value;
+	      } else {
+	         maleSurvied += d.values[1].values[0].value;
+	      }
+	   } 
+
+	} else {
+	   if (d.values[0].key == "0"){ // for not survied passengers
+	      if (d.values[0].values.length == 2){
+	        femaleNotSurvied += d.values[0].values[0].value;
+                maleNotSurvied += d.values[0].values[1].value;
+	      } else{
+		if (d.values[0].values[0].key == "female"){
+		   femaleNotSurvied += d.values[0].values[0].value;
+		 } else{
+		   maleNotSurvied += d.values[0].values[0].value;
+		 }
+	      }
+	   } else { // for survied passengers
+	      if (d.values[0].values.length == 2){
+	        femaleSurvied += d.values[0].values[0].value;
+                maleSurvied += d.values[0].values[1].value;
+	      } else{
+		if (d.values[0].values[0].key == "female"){
+                   femaleSurvied += d.values[0].values[0].value;
+		} else{
+		   maleSurvied += d.values[0].values[0].value;
+		}
+	      }  
+	   }
+	
+	}
+
+
+        overAll = parseFloat((maleSurvied + femaleSurvied) / (maleSurvied + femaleSurvied + maleNotSurvied + femaleNotSurvied) * 100 /100 ).toFixed(2);
+	male = parseFloat((maleSurvied ) / (maleSurvied  + maleNotSurvied ) * 100 /100 ).toFixed(2);
+        female = parseFloat((femaleSurvied ) / (femaleSurvied  + femaleNotSurvied ) * 100 /100 ).toFixed(2);
+
+        if (isNaN(female)) {
+	   female = 0;
+	}
+        
+	surviedRate.push(overAll);
+        surviedRate.push(male);
+        surviedRate.push(female);
+
+	return surviedRate;
+    
+    }    
+    
+
+  // Scale the range of the data
+    x.domain(nest_d.map(function(d) { return d.key; }));
+    y.domain([0,d3.max(nest_d,function(d){return d3.max(count(d)); })]);
+
+  
+    //create X-axis
+    g.append("g")
+      .attr("class", "axis axis--x")
+      .attr("transform", "translate(15," + height + ")")
+      .call(d3.axisBottom(x));
+
+    // text label for the x axis
+    g.append("text")             
+      .attr("transform",
+            "translate(" + (width/2) + " ," + 
+                           (height + margin.top +20) + ")")
+      .style("text-anchor", "middle")
+      .text("Age");
+    
+    //create Y-axis
+    g.append("g")
+      .attr("class", "axis axis--y")
+      .attr("transform", "translate(15, 0  )")
+      .call(d3.axisLeft(y).ticks(10, "%"));
+
+
+    //create bar chart (survied / not survied in % ) for overall people survied and not survied
+   var overAllBar = g.selectAll(".overAllBar")
+      .data(nest_d)
+      .enter()
+      .append("rect")
+         .attr("class","overAllBar")
+	 .attr("x",function(d) { return x(d.key) + 15; })
+	 .attr("y",function(d) {return y(count(d)[0]); })
+	 .attr("width", x.bandwidth()/3)
+         .attr("height", function(d) { return height - y(count(d)[0])})
+	 .on("mouseover", function(d) {
+            div.transition()
+               .duration(200)
+               .style("opacity", .9);
+            div.html("Overall survival rate on age" + " " + d.key + ":" + "<br/>" + count(d)[0])
+               .style("left", (d3.event.pageX) + "px")
+               .style("top", (d3.event.pageY - 28) + "px");
+       })
+         .on("mouseout", function(d) {
+             div.transition()
+                .duration(500)
+                .style("opacity", 0);
+       });
+
+    // create bar for male surived of rate
+    g.selectAll(".maleBar")
+      .data(nest_d)
+      .enter()
+      .append("rect")
+         .attr("class","maleBar")
+	 .attr("x",function(d) { return x(d.key) + 47; })
+	 .attr("y",function(d) {return y(count(d)[1]); })
+	 .attr("width", x.bandwidth()/3)
+         .attr("height", function(d) { return height - y(count(d)[1])})
+	 .on("mouseover", function(d) {
+            div.transition()
+               .duration(200)
+               .style("opacity", .9);
+            div.html("Man survival rate on age" + " " + d.key + ":" + "<br/>" + count(d)[1])
+               .style("left", (d3.event.pageX) + "px")
+               .style("top", (d3.event.pageY - 28) + "px");
+       })
+         .on("mouseout", function(d) {
+             div.transition()
+                .duration(500)
+                .style("opacity", 0);
+       });
+    
+    // create bar for female surived of rate
+    g.selectAll(".femaleBar")
+      .data(nest_d)
+      .enter()
+      .append("rect")
+         .attr("class","femaleBar")
+	 .attr("x",function(d) { return x(d.key) + 80; })
+	 .attr("y",function(d) {return y(count(d)[2]); })
+	 .attr("width", x.bandwidth()/3)
+         .attr("height", function(d) { return height - y(count(d)[2])})
+	 .on("mouseover", function(d) {
+            div.transition()
+               .duration(200)
+               .style("opacity", .9);
+            div.html("Female survival rate on age" + " " + d.key + ":" + "<br/>" + count(d)[2])
+               .style("left", (d3.event.pageX) + "px")
+               .style("top", (d3.event.pageY - 28) + "px");
+       })
+         .on("mouseout", function(d) {
+             div.transition()
+                .duration(500)
+                .style("opacity", 0);
+       });
+
+  g.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Survival rate");
+
+    var category = ["Overall", "Male", "Female"];
+    var color = ["#5B5B5B", "steelblue", "#FF60AF"]
+    var legendRectWidth = 30,
+        legendRectHeight = 15,
+	legendSpacing = 20;
+
+
+    var legend = svg.selectAll(".legend")
+	   .data(color)
+	   .enter()
+	   .append("g")
+	   .attr("class", "legend")
+           .attr("transform", "translate(" + margin.left + "," + margin.top + ")"); 
+
+    legend.append('rect')
+	  .attr("x",margin.left/2 + 15)
+	  .attr("y",function(d,i){return i * legendSpacing;})
+          .attr('width', legendRectWidth)                          
+          .attr('height', legendRectHeight)                         
+          .style('fill', function(d){return d;})                                   
+          .style('stroke', function(d){return d;});
+
+    var legend_text = svg.selectAll(".legendtext")
+	   .data(category)
+	   .enter()
+	   .append("g")
+	   .attr("class", "legendtext")
+           .attr("transform", "translate(" + margin.left + "," + margin.top + ")"); 
+
+    legend_text.append("text")
+       .attr("x",margin.left/2 + 50)
+       .attr("y",function(d,i){return 10 + i * legendSpacing;})
+       .text(function(d) { return d; });
+       
+});
+  </script>
+</body>
+</html> 
